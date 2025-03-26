@@ -18,7 +18,7 @@ class UserProfile(AbstractUser):
 
 
 class Brand(models.Model):
-    brand_name = models.CharField(max_length=32, null=True, blank=True)
+    brand_name = models.CharField(max_length=32)
 
     def __str__(self):
         return f'{self.brand_name}'
@@ -46,20 +46,20 @@ class Car(models.Model):
         ('автомат', 'автомат'),
         ('механика', 'механика')
     )
-    transmission = models.CharField(max_length=32, choices=AUTO_CHOICES, null=True, blank=True)
+    transmission = models.CharField(max_length=32, choices=AUTO_CHOICES)
     mileage = models.IntegerField(verbose_name='пробег')
     price = models.PositiveSmallIntegerField()
     description = models.TextField()
-    seller = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='seller_user')
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, blank=True, related_name='brand')
-    model = models.ForeignKey(Model, on_delete=models.CASCADE, null=True, blank=True, related_name='model')
+    seller = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='seller_user')
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='brand')
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model')
 
     def __str__(self):
         return f'{self.model}'
 
 
 class Image(models.Model):
-    car_image = models.ForeignKey(Car, on_delete=models.CASCADE, null=True, blank=True, related_name='car_images')
+    car_image = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='car_images')
     image = models.ImageField(upload_to='image')
 
     def __str__(self):
@@ -67,7 +67,7 @@ class Image(models.Model):
 
 
 class Auction(models.Model):
-    car = models.ForeignKey(Car, on_delete=models.CASCADE, null=True, blank=True, related_name='car')
+    car = models.ForeignKey(Car, on_delete=models.CASCADE,  related_name='car')
     start_price = models.DecimalField(max_digits=10, decimal_places=2)
     min_price = models.DecimalField(max_digits=10, decimal_places=2)
     start_time = models.DateTimeField(null=True, blank=True)
@@ -77,15 +77,15 @@ class Auction(models.Model):
         ('завершен', 'завершен'),
         ('отменен', 'отменен'),
     )
-    status = models.CharField(max_length=32, choices=STATUS_CHOICES, null=True, blank=True)
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES)
 
     def __str__(self):
         return self.status
 
 
 class Bid(models.Model):
-    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True, blank=True, related_name='bids')
-    buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='buyer_bid')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE,  related_name='bids')
+    buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='buyer_bid')
     amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='размер ставки')
     created_at = models.DateField(auto_now_add=True)
 
@@ -94,8 +94,8 @@ class Bid(models.Model):
 
 
 class FeedBack(models.Model):
-    seller = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='Покупатель')
-    buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name='Продавец')
+    seller = models.ForeignKey(UserProfile, on_delete=models.CASCADE,  related_name='Покупатель')
+    buyer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Продавец')
     rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField(null=True, blank=True)
 
